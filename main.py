@@ -8,33 +8,34 @@ app = Flask(__name__)
 def create_table():
     connect = sqlite3.connect("hospital.db")
     cursor = connect.cursor()
-    cursor.execute("CREATE TABLE if not exists patients(id int,"
-                   "name text not null,"
-                   "dob text not  null,"
-                   "gender text not null,"
-                   "email text unique not null,"
-                   "phone text unique not null,"
-                   "address text)")
+    cursor.execute("""CREATE TABLE if not exists patients(
+                   id integer primary key autoincrement,
+                   name text not null,
+                   dob text not  null,
+                   gender text not null,
+                   email text unique not null,
+                   phone text unique not null,
+                   address text)""")
     connect.commit()
     connect.close()
-    def get_connection():
+def get_connection():
         return sqlite3.connect("hospital.db")
 
     ##validator class##
-    class PatientValidator:
-        def validate_name(name):  ##_name__#
+class PatientValidator:
+        def validate_name(self,name):  ##_name__#
             if not re.fullmatch(r"[A-Za-z]+",name):
                 raise ValueError(
                     "name should contain only letter and space"
                 )
-        def validate_email(email): #___email___#
+        def validate_email(self,email): #___email___#
             if not re.fullmatch(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",email):
 
 
                 raise ValueError(
                     "invalid email format"
                 )
-        def validate_phone(phone):#____phone___#
+        def validate_phone(self,phone):#____phone___#
             if not re.fullmatch(r"[6-9][0-9]{9}",phone):
                 raise ValueError(
                     "phone should be 10 digit "
@@ -44,6 +45,12 @@ def create_table():
 ##____patient class___##
 class Patient:
     def __init__(self,name,dob,gender,email,phone,address):
+
+        validator = PatientValidator()
+        validator.validate_name(name)
+        validator.validate_email(email)
+        validator.validate_phone(phone)
+
         self.name=name
         self.dob = dob
         self.gender= gender
@@ -82,8 +89,8 @@ def add_patients():
         cursor=connect.cursor()
         cursor.execute(
             """insert into patients(name,dob,gender,email,phone,address)"
-            "values(?,?,?,?,?,?)"
-            """,
+            "values(?,?,?,?,?,?)""",
+
             (
                 data["name"],
                 data["dob"],
@@ -99,8 +106,8 @@ def add_patients():
         connect.close()
         return "patient register sucessfully "
     except Exception as error:
-        print(error)
-        return "error"
+        print("ERROR:",error)
+        return str(error)
 
 
 @app.route("/patients",methods=['GET'])
@@ -132,7 +139,7 @@ def get_patients():
 
 ##--- view single patient__##
 
-@app.route('/patient/<int:id>',methods=['GET'])
+@app.route('/details/<int:id>',methods=['GET'])
 def get_patient(id):
     connect=sqlite3.connect("hospital.db")
     cursor = connect.cursor()
@@ -156,7 +163,7 @@ def get_patient(id):
         })
     return({"message":"patient not found"})
 
-@app.route('/patient/<int:id>',methods=["DELETE"])
+@app.route('/delete/<int:id>',methods=["DELETE"])
 def delete_patient(id):
     connect=sqlite3.connect("hospital.db")
     cursor= connect.cursor()
@@ -167,6 +174,10 @@ def delete_patient(id):
     return {
         "message":"patient delete sucessfully"
     }
+if __name__=="__main__":
+
+    app.run(port=5002)
+
 
 
 
