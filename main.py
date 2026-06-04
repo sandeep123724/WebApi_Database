@@ -22,19 +22,19 @@ def create_table():
 
     ##validator class##
     class PatientValidator:
-        def validate_name(name):
+        def validate_name(name):  ##_name__#
             if not re.fullmatch(r"[A-Za-z]+",name):
                 raise ValueError(
                     "name should contain only letter and space"
                 )
-        def validate_email(email):
+        def validate_email(email): #___email___#
             if not re.fullmatch(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",email):
 
 
                 raise ValueError(
                     "invalid email format"
                 )
-        def validate_phone(phone):
+        def validate_phone(phone):#____phone___#
             if not re.fullmatch(r"[6-9][0-9]{9}",phone):
                 raise ValueError(
                     "phone should be 10 digit "
