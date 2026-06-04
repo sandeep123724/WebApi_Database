@@ -51,6 +51,129 @@ class Patient:
         self.phone = phone
         self.address= address
 
+create_table()
+
+
+##____home route___####
+
+@app.route("/")
+def home():
+    return "patient management api running"
+
+
+###__register patient__##
+
+
+
+@app.route('/patient',methods=['POST'])
+def add_patients():
+    try:
+
+        data= request.get_json()
+
+        patient = Patient(
+            data["name"],
+            data["dob"],
+            data["gender"],
+            data["email"],
+            data["phone"],
+            data["address"])
+        connect = sqlite3.connect("hospital.db")
+        cursor=connect.cursor()
+        cursor.execute(
+            """insert into patients(name,dob,gender,email,phone,address)"
+            "values(?,?,?,?,?,?)"
+            """,
+            (
+                data["name"],
+                data["dob"],
+                data["gender"],
+                data["email"],
+                data["phone"],
+                data["address"]
+
+
+
+            ))
+        connect.commit()
+        connect.close()
+        return "patient register sucessfully "
+    except Exception as error:
+        print(error)
+        return "error"
+
+
+@app.route("/patients",methods=['GET'])
+def get_patients():
+    connect= sqlite3.connect("hospital.db")
+    cursor= connect.cursor()
+    cursor.execute("select * from patients")
+
+    all_patients= cursor.fetchall()
+    connect.close()
+
+    result=[]
+
+    ##-convert each row into dictionary
+    for patient in all_patients:
+        patient_data={
+            "id":patient[0],
+            "name":patient[1],
+            "dob":patient[2],
+            "gender":patient[3],
+            "email":patient[4],
+            "phone":patient[5],
+            "address":patient[6]
+        }
+        result.append(patient_data)
+
+    return (result)
+
+
+##--- view single patient__##
+
+@app.route('/patient/<int:id>',methods=['GET'])
+def get_patient(id):
+    connect=sqlite3.connect("hospital.db")
+    cursor = connect.cursor()
+    cursor.execute(
+        "select *from patients where id = ?",
+        (id,)
+    )
+
+    patients = cursor.fetchone()
+    connect.close()
+
+    if patients:
+        return({
+            "id":patients[0],
+            "name":patients[1],
+            "dob":patients[2],
+            "gender":patients[3],
+            "email":patients[4],
+            "phone":patients[5],
+            "address":patients[6]
+        })
+    return({"message":"patient not found"})
+
+@app.route('/patient/<int:id>',methods=["DELETE"])
+def delete_patient(id):
+    connect=sqlite3.connect("hospital.db")
+    cursor= connect.cursor()
+    cursor.execute("delete from patients where id =?",(id,))
+    connect.commit()
+    connect.close()
+
+    return {
+        "message":"patient delete sucessfully"
+    }
+
+
+
+
+
+
+
 
 
 
