@@ -88,8 +88,8 @@ def add_patients():
         connect = sqlite3.connect("hospital.db")
         cursor=connect.cursor()
         cursor.execute(
-            """insert into patients(name,dob,gender,email,phone,address)"
-            "values(?,?,?,?,?,?)""",
+            """insert into patients(name,dob,gender,email,phone,address)
+            values(?,?,?,?,?,?)""",
 
             (
                 data["name"],
@@ -101,7 +101,8 @@ def add_patients():
 
 
 
-            ))
+            )
+        )
         connect.commit()
         connect.close()
         return "patient register sucessfully "
