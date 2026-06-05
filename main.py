@@ -9,7 +9,7 @@ def create_table():
     connect = sqlite3.connect("hospital.db")
     cursor = connect.cursor()
     cursor.execute("""CREATE TABLE if not exists patients(
-                   id integer primary key autoincrement,
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                    name text not null,
                    dob text not  null,
                    gender text not null,
@@ -177,16 +177,4 @@ def delete_patient(id):
     }
 if __name__=="__main__":
 
-    app.run(port=5002)
-
-
-
-
-
-
-
-
-
-
-
-
+    app.run(port=5000)
